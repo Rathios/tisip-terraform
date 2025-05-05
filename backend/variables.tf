@@ -22,6 +22,7 @@ variable "sa_backend_name" {
 variable "sa_backend_accesskey_name" {
   description = "Name of the storage account access key"
   type        = string
+  sensitive   = true
 }
 
 variable "sc_backend_name" {
@@ -32,4 +33,5 @@ variable "sc_backend_name" {
 variable "subscription_id" {
   description = "The subscription ID to use"
   type        = string
+  sensitive   = true
 }
