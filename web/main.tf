@@ -5,15 +5,15 @@ resource "random_string" "random_string" {
   upper   = false
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = local.rg_name
-  location = var.rg_location
+resource "azurerm_resource_group" "rg_web" {
+  name     = local.rg_web_name
+  location = var.rg_web_location
 }
 
 resource "azurerm_storage_account" "sa_web" {
-  name                     = local.sa_web_name
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
+  name                     = "${lower(local.sa_web_name)}${random_string.random_string.result}"
+  resource_group_name      = azurerm_resource_group.rg_web.name
+  location                 = azurerm_resource_group.rg_web.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
@@ -28,5 +28,5 @@ resource "azurerm_storage_blob" "index_html" {
   storage_container_name = "$web"
   type                   = "Block"
   content_type           = "text/html"
-  source_content         = "<html><body><h1>${local.index_text}</h1></body></html>"
+  source_content         = "<html><body>${local.index_text}</body></html>"
 }

@@ -1,12 +1,12 @@
 
 locals {
   # Workspace
-  workspaces_suffix = terraform.workspace == "default" ? "" : "${terraform.workspace}"
+  workspace_suffix = terraform.workspace == "default" ? "" : "${terraform.workspace}"
 
   # Infrastructure
-  rg_name     = "${var.rg_name}-${local.workspaces_suffix}"
-  sa_web_name = "${var.sa_web_name}${random_string.random_string.result}${local.workspaces_suffix}"
+  rg_web_name = terraform.workspace == "default" ? var.rg_web_name : "${var.rg_web_name}-${local.workspace_suffix}"
+  sa_web_name = terraform.workspace == "default" ? var.sa_web_name : "${var.sa_web_name}${local.workspace_suffix}"
 
   # Web
-  index_text  = "Web page created with Terraform. Environment: ${terraform.workspace}"
+  index_text  = "<h1>Web page created with Terraform. Environment: ${terraform.workspace}</h1>"
 }
