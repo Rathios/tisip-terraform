@@ -4,5 +4,5 @@ output "primary_web_endpoint" {
 }
 
 output "rg_name" {
-  value = azurerm_resource_group.rg.name
+  value = azurerm_resource_group.rg_web.name
 }
