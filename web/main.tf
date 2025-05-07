@@ -17,6 +17,7 @@ resource "azurerm_storage_account" "sa_web" {
   location                 = azurerm_resource_group.rg_web.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  min_tls_version          = "TLS1_2"
 
   static_website {
     index_document = var.index_document
