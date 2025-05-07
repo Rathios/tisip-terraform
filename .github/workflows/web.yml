@@ -33,9 +33,6 @@ jobs:
 
   validate:
     name: Validate
-    # Run this job on all branches except main
-    # Jobs for main branch include validation already
-    if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -53,6 +50,7 @@ jobs:
 
   dev_stage:
     name: Deploy dev
+    needs: validate
     # Run this job on main branch only
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
@@ -66,11 +64,6 @@ jobs:
 
       - name: Terraform workspace select or create dev
         run: terraform workspace select dev || terraform workspace new dev
-        working-directory: ${{ env.WORKING_DIR }}
-
-      - name: Terraform validate
-        id: validate
-        run: terraform validate
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Check last commit message'
@@ -99,10 +92,10 @@ jobs:
 
   stage_prod:
     name: Deploy stage
+    needs: dev_stage
     # Run this job on main branch only
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
-    needs: dev_stage
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
@@ -113,11 +106,6 @@ jobs:
 
       - name: Terraform workspace select or create stage
         run: terraform workspace select stage || terraform workspace new stage
-        working-directory: ${{ env.WORKING_DIR }}
-
-      - name: Terraform validate
-        id: validate
-        run: terraform validate
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Check last commit message'
@@ -146,9 +134,9 @@ jobs:
 
   prod:
     name: Deploy prod
+    needs: stage_prod
     # Run this job on main branch only
     if: github.ref == 'refs/heads/main'
-    needs: stage_prod
     runs-on: ubuntu-22.04
     environment:
       name: production
@@ -163,11 +151,6 @@ jobs:
 
       - name: Terraform workspace select or create prod
         run: terraform workspace select prod || terraform workspace new prod
-        working-directory: ${{ env.WORKING_DIR }}
-
-      - name: Terraform validate
-        id: validate
-        run: terraform validate
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Check last commit message'
