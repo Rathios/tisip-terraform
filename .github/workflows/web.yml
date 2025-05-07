@@ -26,12 +26,35 @@ env:
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   TF_VAR_rg_web_name: ${{ secrets.RG_WEB_NAME }}
   TF_VAR_sa_web_name: ${{ secrets.SA_WEB_NAME }}
-  TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   WORKING_DIR: ./web
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+
+  validate:
+    name: Validate
+    # Run this job on all branches except main
+    # Jobs for main branch include validation already
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Terraform init
+        id: init
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
+        working-directory: ${{ env.WORKING_DIR }}
+
   dev_stage:
+    name: Deploy dev
+    # Run this job on main branch only
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -43,6 +66,11 @@ jobs:
 
       - name: Terraform workspace select or create dev
         run: terraform workspace select dev || terraform workspace new dev
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Check last commit message'
@@ -70,6 +98,9 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
   stage_prod:
+    name: Deploy stage
+    # Run this job on main branch only
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
     needs: dev_stage
     steps:
@@ -82,6 +113,11 @@ jobs:
 
       - name: Terraform workspace select or create stage
         run: terraform workspace select stage || terraform workspace new stage
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Check last commit message'
@@ -109,6 +145,9 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
   prod:
+    name: Deploy prod
+    # Run this job on main branch only
+    if: github.ref == 'refs/heads/main'
     needs: stage_prod
     runs-on: ubuntu-22.04
     environment:
@@ -124,6 +163,11 @@ jobs:
 
       - name: Terraform workspace select or create prod
         run: terraform workspace select prod || terraform workspace new prod
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Check last commit message'
