@@ -44,12 +44,28 @@ jobs:
         run: terraform workspace select dev || terraform workspace new dev
         working-directory: ${{ env.WORKING_DIR }}
 
-      - name: Terraform apply dev
-        run: terraform apply -auto-approve
+      - name: 'Check last commit message'
+        id: commit
+        run: echo "::set-output name=message::$(git log --format=%B -n 1)"
+
+      - name: 'Conditionally run Terraform action'
+        run: |
+          if [[ "${{ steps.commit.outputs.message }}" == *"destroy"* ]]; then
+            terraform destroy -auto-approve
+          else
+            terraform apply -auto-approve
+          fi
         working-directory: ${{ env.WORKING_DIR }}
 
-      - name: Test dev
-        run: curl $(terraform output -raw primary_web_endpoint)
+      - name: Display dev endpoint URL and run test
+        run: |
+          if [[ "${{ steps.commit.outputs.message }}" == *"destroy"* ]]; then
+            echo "No need to test destroy"
+          else
+            WEB_ENDPOINT="$(terraform output -raw primary_web_endpoint)"
+            echo "Testing web endpoint: $WEB_ENDPOINT"
+            curl "$WEB_ENDPOINT"
+          fi
         working-directory: ${{ env.WORKING_DIR }}
 
   stage_prod:
@@ -67,12 +83,24 @@ jobs:
         run: terraform workspace select stage || terraform workspace new stage
         working-directory: ${{ env.WORKING_DIR }}
 
-      - name: Terraform apply stage
-        run: terraform apply -auto-approve
+      - name: 'Conditionally run Terraform action'
+        run: |
+          if [[ "${{ steps.commit.outputs.message }}" == *"destroy"* ]]; then
+            terraform destroy -auto-approve
+          else
+            terraform apply -auto-approve
+          fi
         working-directory: ${{ env.WORKING_DIR }}
 
-      - name: Test stage
-        run: curl $(terraform output -raw primary_web_endpoint)
+      - name: Display stage endpoint URL and run test
+        run: |
+          if [[ "${{ steps.commit.outputs.message }}" == *"destroy"* ]]; then
+            echo "No need to test destroy"
+          else
+            WEB_ENDPOINT="$(terraform output -raw primary_web_endpoint)"
+            echo "Testing web endpoint: $WEB_ENDPOINT"
+            curl "$WEB_ENDPOINT"
+          fi
         working-directory: ${{ env.WORKING_DIR }}
 
   prod:
@@ -93,15 +121,22 @@ jobs:
         run: terraform workspace select prod || terraform workspace new prod
         working-directory: ${{ env.WORKING_DIR }}
 
-      - name: Terraform apply prod
-        run: terraform apply -auto-approve
+      - name: 'Conditionally run Terraform action'
+        run: |
+          if [[ "${{ steps.commit.outputs.message }}" == *"destroy"* ]]; then
+            terraform destroy -auto-approve
+          else
+            terraform apply -auto-approve
+          fi
         working-directory: ${{ env.WORKING_DIR }}
 
-      - name: Test prod
-        run: curl $(terraform output -raw primary_web_endpoint)
-        working-directory: ${{ env.WORKING_DIR }}
-
-      - name: Get web endpoint
-        id: get_web_endpoint
-        run: echo "WEB_ENDPOINT=$(terraform output -raw primary_web_endpoint)"
+      - name: Display prod endpoint URL and run test
+        run: |
+          if [[ "${{ steps.commit.outputs.message }}" == *"destroy"* ]]; then
+            echo "No need to test destroy"
+          else
+            WEB_ENDPOINT="$(terraform output -raw primary_web_endpoint)"
+            echo "Testing web endpoint: $WEB_ENDPOINT"
+            curl "$WEB_ENDPOINT"
+          fi
         working-directory: ${{ env.WORKING_DIR }}
