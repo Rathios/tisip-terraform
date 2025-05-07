@@ -1,5 +1,5 @@
 
-name: web
+name: web-validate
 
 # Controls when the workflow will run
 on:
