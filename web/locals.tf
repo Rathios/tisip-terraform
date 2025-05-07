@@ -1,7 +1,7 @@
 
 locals {
   # Workspace
-  workspace_suffix = terraform.workspace == "default" ? "" : "${terraform.workspace}"
+  workspace_suffix = terraform.workspace == "default" ? "" : terraform.workspace
 
   # Infrastructure
   rg_web_name = terraform.workspace == "default" ? var.rg_web_name : "${var.rg_web_name}-${local.workspace_suffix}"
