@@ -17,12 +17,6 @@ variable "sa_web_name" {
   default     = "saweb"
 }
 
-variable "subscription_id" {
-  description = "The subscription ID to use"
-  type        = string
-  sensitive   = true
-}
-
 # Web
 
 variable "index_document" {
