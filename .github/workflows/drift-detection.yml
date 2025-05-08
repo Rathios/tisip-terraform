@@ -77,25 +77,25 @@ jobs:
         # This step adds a summary notification to the GitHub Actions page, alerting team members about the drift
         # The message points to the drift report for further details
 
-      # Step 8: Notify via email
-      - name: Send mail
-        uses: dawidd6/action-send-mail@v5
-        with:
-          # Specify connection via URL (replaces server_address, server_port, secure,
-          # username and password)
-          #
-          # Format:
-          #
-          #  * smtp://user:password@server:port
-          #  * smtp+starttls://user:password@server:port
-          connection_url: ${{secrets.MAIL_CONNECTION}}
-          # Required mail subject:
-          subject: Github Actions - Drift detected in Terraform deployment
-          # Required recipients' addresses:
-          to: ${{secrets.MAIL_TO}}
-          # Required sender full name (address can be skipped):
-          from: <${{secrets.MAIL_FROM}}> # <user@example.com>
-          # Optional plain body:
-          body: Drift detected in Terraform deployment in ${{github.repository}}
-          # Optional custom SMTP MAIL FROM address (overrides username):
-          envelope_from: <${{secrets.MAIL_FROM}}>
+      # # Step 8: Notify via email
+      # - name: Send mail
+      #   uses: dawidd6/action-send-mail@v5
+      #   with:
+      #     # Specify connection via URL (replaces server_address, server_port, secure,
+      #     # username and password)
+      #     #
+      #     # Format:
+      #     #
+      #     #  * smtp://user:password@server:port
+      #     #  * smtp+starttls://user:password@server:port
+      #     connection_url: ${{secrets.MAIL_CONNECTION}}
+      #     # Required mail subject:
+      #     subject: Github Actions - Drift detected in Terraform deployment
+      #     # Required recipients' addresses:
+      #     to: ${{secrets.MAIL_TO}}
+      #     # Required sender full name (address can be skipped):
+      #     from: <${{secrets.MAIL_FROM}}> # <user@example.com>
+      #     # Optional plain body:
+      #     body: Drift detected in Terraform deployment in ${{github.repository}}
+      #     # Optional custom SMTP MAIL FROM address (overrides username):
+      #     envelope_from: <${{secrets.MAIL_FROM}}>
