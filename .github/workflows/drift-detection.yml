@@ -96,6 +96,6 @@ jobs:
           # Required recipients' addresses:
           to: ${{secrets.MAIL_TO}}
           # Required sender full name (address can be skipped):
-          from: Github Actions # <user@example.com>
+          from: Github Actions <noreply@rawr.no> # <user@example.com>
           # Optional plain body:
           body: Drift detected in Terraform deployment in ${{github.repository}}
