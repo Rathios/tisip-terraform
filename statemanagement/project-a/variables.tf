@@ -1,0 +1,21 @@
+
+variable "location" {
+  type        = string
+  default     = "westeurope"
+  description = "The location of the storage account"
+}
+
+variable "rg_name" {
+  type        = string
+  description = "The name of the resource group"
+}
+
+variable "sa_name" {
+  type        = string
+  description = "The name of the storage account"
+}
+
+variable "subscription_id" {
+  type        = string
+  description = "The subscription ID"
+}
